@@ -1,0 +1,47 @@
+$AKS_RESOURCE_GROUP="k8workshop"
+$AKS_CLUSTER_NAME="k8workshopaks"
+$ACR_RESOURCE_GROUP="k8workshop"
+$ACR_NAME="k8workshopdemoSSS"
+
+$CLIENT_ID=$(az aks show --resource-group $AKS_RESOURCE_GROUP --name $AKS_CLUSTER_NAME --query "identityProfile.kubeletidentity.clientId" --output tsv)
+
+#$CLIENT_ID: fb9d8ccc-be96-4438-ba67-a3fc57fb7ee6
+
+$ACR_ID=$(az acr show --name $ACR_NAME --resource-group $ACR_RESOURCE_GROUP --query "id" --output tsv)
+
+#ACR_ID: /subscriptions/9fa9840d-74e0-426f-9237-65dd5bbf5ec9/resourceGroups/k8workshop/providers/Microsoft.ContainerRegistry/registries/k8workshopdemoSSS
+
+az role assignment create --assignee $CLIENT_ID --role acrpull --scope $ACR_ID
+
+-------------------------Service Principle-----------------------
+
+{                                                                  
+  "canDelegate": null,
+  "condition": null,
+  "conditionVersion": null,
+  "description": null,
+  "id": "/subscriptions/9fa9840d-74e0-426f-9237-65dd5bbf5ec9/resourceGroups/k8workshop/providers/Microsoft.ContainerRegistry/registries/k8workshopdemoSSS/providers/Microsoft.Authorization/roleAssignments/c7f3ee89-ee03-4ac0-9241-74495bafb891",
+  "name": "c7f3ee89-ee03-4ac0-9241-74495bafb891",
+  "principalId": "e5bd5632-fd65-4f7f-aa49-b3b71103d4ac",
+  "principalName": "fb9d8ccc-be96-4438-ba67-a3fc57fb7ee6",
+  "principalType": "ServicePrincipal",
+  "resourceGroup": "k8workshop",
+  "roleDefinitionId": "/subscriptions/9fa9840d-74e0-426f-9237-65dd5bbf5ec9/providers/Microsoft.Authorization/roleDefinitions/7f951dda-4ed3-4680-a7ca-43fe172d538d",
+  "roleDefinitionName": "AcrPull",
+  "scope": "/subscriptions/9fa9840d-74e0-426f-9237-65dd5bbf5ec9/resourceGroups/k8workshop/providers/Microsoft.ContainerRegistry/registries/k8workshopdemoSSS",
+  "type": "Microsoft.Authorization/roleAssignments"
+}
+-----------------------------------------------------------------------
+Kubectl Commands:
+
+kubectl apply -f app.yml
+kubectl apply -f service.yml
+kubectl get service my-service --watch
+
+kubectl api-versions
+kubectl get nodes
+kubectl get pods
+kubectl describe Deployment
+
+kubectl delete services my-service
+kubectl delete deployment app-deployment
